@@ -26,7 +26,7 @@ import java.util.Set;
 })
 @EntityListeners(AuditingEntityListener.class) // Config에서 Auditing한 것 동작하려면 필요
 @Entity
-public class Article {
+public class Article extends AuditingFields{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,17 +39,11 @@ public class Article {
     // null (필수 아님)
     @Setter private String hashtag; // 해시태그
 
-
+    @ToString.Exclude
     @OrderBy("id") // id 기준으로 정렬
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL) // ArticleComment는 Article에 의해 매핑되므로 mappedBy = "article" , cascade = CascadeType.ALL : 부모 엔티티 변경 되면 자식도 변경
-    @ToString.Exclude
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
-    // metadata(not null)
-    @CreatedDate @Column(nullable = false) LocalDateTime createdAt; // 생성일시
-    @CreatedBy @Column(nullable = false, length = 100) String createdBy; // 생성자
-    @LastModifiedDate @Column(nullable = false) private LocalDateTime modifiedAt; // 수정일시
-    @LastModifiedBy @Column(nullable = false, length = 100) String modifiedBy; // 수정자
 
     protected Article() {
     }
