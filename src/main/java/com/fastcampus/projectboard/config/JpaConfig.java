@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.Optional;
 
-@EnableJpaAuditing
-@Configuration // 여러가지 필요한 설정들을 이 클래스에 적어놓음
+@EnableJpaAuditing // 메타데이터들을 자동으로 업데이트 (@CreatedDate, @CreatedBy 등의 어노테이션 생성하여 사용)
+@Configuration // 여러가지 필요한 설정들을 적음
 public class JpaConfig {
 
     @Bean

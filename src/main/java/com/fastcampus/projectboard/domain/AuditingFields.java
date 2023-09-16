@@ -22,20 +22,20 @@ public class AuditingFields {
 
     // metadata(not null)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // 날짜와 시간 형식을 지정하고 데이터 바인딩을 제어하는 데 사용
-    @CreatedDate
+    @CreatedDate // Auditing
     @Column(nullable = false, updatable = false) // update 불가
     private LocalDateTime createdAt; // 생성일시
 
-    @CreatedBy
+    @CreatedBy // Auditing
     @Column(nullable = false, updatable = false, length = 100) // update 불가
     private String createdBy; // 생성자
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @LastModifiedDate
+    @LastModifiedDate // Auditing
     @Column(nullable = false)
     private LocalDateTime modifiedAt; // 수정일시
 
-    @LastModifiedBy
+    @LastModifiedBy // Auditing
     @Column(nullable = false, length = 100)
     private String modifiedBy; // 수정자
 }

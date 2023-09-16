@@ -13,13 +13,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("JPA 연결 테스트")
-@Import(JpaConfig.class)
+@Import(JpaConfig.class) // Auditing 기능을 가져오기 위해
 @DataJpaTest
 class JpaRepositoryTest {
-
+    // 테스트 대상
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
 
+    // Autowired를 통한 의존성 주입 (생성자 주입 방법을 사용)
     public JpaRepositoryTest(
             @Autowired ArticleRepository articleRepository,
             @Autowired ArticleCommentRepository articleCommentRepository

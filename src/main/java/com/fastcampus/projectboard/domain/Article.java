@@ -24,7 +24,6 @@ import java.util.Set;
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
-@EntityListeners(AuditingEntityListener.class) // Config에서 Auditing한 것 동작하려면 필요
 @Entity
 public class Article extends AuditingFields{
 
@@ -39,25 +38,27 @@ public class Article extends AuditingFields{
     // null (필수 아님)
     @Setter private String hashtag; // 해시태그
 
-    @ToString.Exclude
+    @ToString.Exclude // 순환참조 막음
     @OrderBy("id") // id 기준으로 정렬
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL) // ArticleComment는 Article에 의해 매핑되므로 mappedBy = "article" , cascade = CascadeType.ALL : 부모 엔티티 변경 되면 자식도 변경
-    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
+    private final Set<ArticleComment> articleComments = new LinkedHashSet<>(); // 양방향 바인딩
 
-
+    // Entity는 기본적으로 기본생성자를 가지고 있음
     protected Article() {
     }
 
+    // 도메인과 관련있는 것들만 생성자 만듦 (메타데이터는 자동으로 생성되기 때문에 만들어 줄 필요 X)
     private Article(String title, String content, String hashtag) { // 외부에서 호출 할 수 없으므로(private) 팩토리 메서드 이용
         this.title = title;
         this.content = content;
         this.hashtag = hashtag;
     }
 
-    public static Article of(String title, String content, String hashtag) { // 정적 팩토리 메서드
+    public static Article of(String title, String content, String hashtag) { // 위 생성자를 정적 팩토리 메서드로 호출
         return new Article(title, content, hashtag);
     }
 
+    // 위 내용을 List or Collection에 넣어야 할 때 중복요소 제거할 때나 비교해야할 때 동일성 검정을 해줄 수 있는 equals() & hashcode() 필요
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
