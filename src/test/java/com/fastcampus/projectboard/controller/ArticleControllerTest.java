@@ -21,7 +21,7 @@ class ArticleControllerTest {
         this.mvc = mvc;
     }
 
-    @Disabled("구현 중")
+
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 정상 호출") // `/articles` - 게시판 페이지
     @Test
     public void givenNothing_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
@@ -30,7 +30,7 @@ class ArticleControllerTest {
         // When & Then
         mvc.perform(get("/articles")) // '/articles' 엔드포인트로 HTTP GET 요청을 생성하고, 해당 요청에 대한 응답을 검증
                 .andExpect(status().isOk()) // 특정 HTTP 요청에 대한 응답이 성공적으로 이루어졌는지
-                .andExpect(content().contentType(MediaType.TEXT_HTML)) // 응답의 콘텐츠 유형이 "text/html"임을 검증
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) // 응답의 콘텐츠 유형이 "text/html"임을 검증
                 .andExpect(view().name("articles/index")) // 뷰 이름이 "articles/index"인지 확인
                 .andExpect(model().attributeExists("articles")); // 모델에 "articles"라는 속성이 존재하는지 확인
     }
