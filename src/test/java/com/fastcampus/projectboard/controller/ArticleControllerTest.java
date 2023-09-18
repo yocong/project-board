@@ -34,7 +34,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/index")) // 뷰 이름이 "articles/index"인지 확인
                 .andExpect(model().attributeExists("articles")); // 모델에 "articles"라는 속성이 존재하는지 확인
     }
-    @Disabled("구현 중")
+
     @DisplayName("[view][GET] 게시글 상세 페이지 - 정상 호출") // `/articles{article-id}` - 게시글 페이지
     @Test
     public void givenNothing_whenRequestingArticleView_thenReturnsArticleView() throws Exception {
