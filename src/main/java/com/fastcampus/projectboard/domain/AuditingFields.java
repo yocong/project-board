@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @ToString
 @EntityListeners(AuditingEntityListener.class) // Config에서 Auditing한 것 동작하려면 필요
 @MappedSuperclass // 엔티티 클래스 간에 공통 매핑 정보를 공유할 때 사용 (여기서는 공통인 metadata 부분을 가져옴)
-public class AuditingFields {
+public abstract class AuditingFields {
 
     // metadata(not null)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // 날짜와 시간 형식을 지정하고 데이터 바인딩을 제어하는 데 사용
