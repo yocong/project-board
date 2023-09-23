@@ -2,31 +2,31 @@ package com.fastcampus.projectboard.repository;
 
 import com.fastcampus.projectboard.config.JpaConfig;
 import com.fastcampus.projectboard.domain.Article;
+import com.fastcampus.projectboard.domain.UserAccount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("JPA 연결 테스트")
-@Import(JpaConfig.class) // Auditing 기능을 가져오기 위해
+@Import(JpaConfig.class)
 @DataJpaTest
 class JpaRepositoryTest {
-    // 테스트 대상
+
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final UserAccountRepository userAccountRepository;
 
-    // Autowired를 통한 의존성 주입 (생성자 주입 방법을 사용)
     public JpaRepositoryTest(
-            @Autowired ArticleRepository articleRepository,
-            @Autowired ArticleCommentRepository articleCommentRepository
+            @Autowired ArticleRepository articleRepository, // 의존성 주입
+            @Autowired ArticleCommentRepository articleCommentRepository,
+            @Autowired UserAccountRepository userAccountRepository
     ) {
         this.articleRepository = articleRepository;
         this.articleCommentRepository = articleCommentRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
     @DisplayName("select 테스트")
@@ -35,57 +35,51 @@ class JpaRepositoryTest {
         // Given
 
         // When
-        List<Article> articles = articleRepository.findAll(); // 모든 Article 엔티티를 검색해서 List에 넣고, articles를 통해 사용
+        List<Article> articles = articleRepository.findAll();
 
         // Then
         assertThat(articles)
                 .isNotNull()
                 .hasSize(123);
     }
-
-
     @DisplayName("insert 테스트")
     @Test
     void givenTestData_whenInserting_thenWorksFine() {
         // Given
-        long previousCount = articleRepository.count(); // 카운트
+        long previousCount = articleRepository.count();
+        UserAccount userAccount = userAccountRepository.save(UserAccount.of("uno", "pw", null, null, null));
+        Article article = Article.of(userAccount, "new article", "new content", "#spring");
 
         // When
-        Article savedArticle = articleRepository.save(Article.of("new article", "new content", "#spring"));
+        articleRepository.save(article);
 
         // Then
-        assertThat(articleRepository.count()).isEqualTo(previousCount + 1); // insert후 count 증가 확인
+        assertThat(articleRepository.count()).isEqualTo(previousCount + 1);
     }
-
     @DisplayName("update 테스트")
     @Test
     void givenTestData_whenUpdating_thenWorksFine() {
         // Given
-        Article article = articleRepository.findById(1L).orElseThrow(); // id 불러옴
-        String updatedHashtag = "#springboot"; // hashtag 값 수정
-        article.setHashtag(updatedHashtag); // 수정된 hashtag로 초기화
-
+        Article article = articleRepository.findById(1L).orElseThrow();
+        String updatedHashtag = "#springboot";
+        article.setHashtag(updatedHashtag);
         // When
         Article savedArticle = articleRepository.saveAndFlush(article);
-
         // Then
-        assertThat(savedArticle).hasFieldOrPropertyWithValue("hashtag", updatedHashtag); // hashtag가 updatedHashtag로 업데이트 되었는가?
+        assertThat(savedArticle).hasFieldOrPropertyWithValue("hashtag", updatedHashtag);
     }
-
     @DisplayName("delete 테스트")
     @Test
     void givenTestData_whenDeleting_thenWorksFine() {
         // Given
-        Article article = articleRepository.findById(1L).orElseThrow(); // id 불러옴
-        long previousArticleCount = articleRepository.count(); // 글 삭제 전 count
-        long previousArticleCommentCount = articleCommentRepository.count(); // (글 삭제하면 댓글도 삭제) 댓글 삭제 전 count
-        int deletedCommentsSize = article.getArticleComments().size(); // 삭제된 댓글 count
-
+        Article article = articleRepository.findById(1L).orElseThrow();
+        long previousArticleCount = articleRepository.count();
+        long previousArticleCommentCount = articleCommentRepository.count();
+        int deletedCommentsSize = article.getArticleComments().size();
         // When
         articleRepository.delete(article);
-
         // Then
-        assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 1); // 글 삭제 후 count 동일 여부
-        assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentsSize); // 댓글 삭제 후 count 동일 여부
+        assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 1);
+        assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentsSize);
     }
 }
