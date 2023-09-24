@@ -1,38 +1,43 @@
 package com.fastcampus.projectboard.domain;
 
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.*;
 import java.util.Objects;
 
-@Getter // 모든 필드에 접근 가능 (Lombok에서 제공)
-@ToString // 객체를 문자열로 표현하여, 객체의 필드 값을 쉽게 확인 (Lombok에서 제공)
-@Table(indexes = { // 클래스가 데이터베이스 테이블을 나타내는 데 사용
-        @Index(columnList = "content"), // 빠르게 서칭 가능 하도록 indexing
+@Getter
+@ToString(callSuper = true)
+@Table(indexes = {
+        @Index(columnList = "content"),
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
 @Entity
-public class ArticleComment extends AuditingFields{
-
+public class ArticleComment extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // not null (nullable = false, 필수)
-    @Setter @ManyToOne(optional = false) Article article; // 게시글(ID), Article article: ArticleComment 엔티티가 Article 엔티티 참조, N:1 관계(ArticleComment 입장에서), optional = false : null값 x
-    @Setter @Column(nullable = false, length = 500) String content; // 본문
+    @Setter @ManyToOne(optional = false) private Article article; // 게시글 (ID)
+
+    @Setter @ManyToOne(optional = false) private UserAccount userAccount; // 유저 정보 (ID)
+
+    @Setter @Column(nullable = false, length = 500) private String content; // 본문
 
 
     protected ArticleComment() {
     }
-    private ArticleComment(Article article, String content) {
+
+    private ArticleComment(Article article, UserAccount userAccount, String content) {
         this.article = article;
+        this.userAccount = userAccount;
         this.content = content;
     }
-    public static ArticleComment of(Article article, String content) {
-        return new ArticleComment(article, content);
+
+    public static ArticleComment of(Article article, UserAccount userAccount, String content) {
+        return new ArticleComment(article, userAccount, content);
     }
 
     @Override
