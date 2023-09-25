@@ -19,10 +19,14 @@ public interface ArticleRepository extends
         JpaRepository<Article, Long>, // Article 엔티티를 관리하기 위한 기본적인 CRUD메서드 제공
         QuerydslPredicateExecutor<Article>, // Article에 대한 검색 기능 추가
         QuerydslBinderCustomizer<QArticle> { // 검색 조건 설정
-    Page<Article> findByTitle(String title, Pageable pageable); // 제목을 기반으로 Article을 페이징하여 검색하는 메서드를 정의
+    Page<Article> findByTitleContaining(String title, Pageable pageable); // Containing : 부분 검색
+    Page<Article> findByContentContaining(String content, Pageable pageable); // 부분 검색
+    Page<Article> findByUserAccount_UserIdContaining(String userId, Pageable pageable); // 부분 검색
+    Page<Article> findByUserAccount_NicknameContaining(String nickname, Pageable pageable); // 부분 검색
+    Page<Article> findByHashtag(String hashtag, Pageable pageable);
     @Override
     default void customize(QuerydslBindings bindings, QArticle root) {
-        bindings.excludeUnlistedProperties(true); // 리스트에 포함되지 않은 것은 검색 안되게 해줌 (검색하고 싶은 것만 할 수 있게 만듦)
+        bindings.excludeUnlistedProperties(true); // true로 리스팅하지 않은 필드에 대해서는 검색 기능 열지 않게 함
         bindings.including(root.title, root.content, root.hashtag, root.createdAt, root.createdBy); // 검색 조건 포함
         bindings.bind(root.title).first(StringExpression::containsIgnoreCase); // 대소문자 구분 안하고 검색
         bindings.bind(root.content).first(StringExpression::containsIgnoreCase);

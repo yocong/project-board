@@ -29,9 +29,11 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
     // Mock 주입 대상에 @InjectMocks 어노테이션, 나머지는 @Mock
-    @InjectMocks private ArticleService sut; // 테스트 해야 할 service
+    @InjectMocks
+    private ArticleService sut; // 테스트 해야 할 service
 
-    @Mock private ArticleRepository articleRepository;
+    @Mock
+    private ArticleRepository articleRepository;
 
     @DisplayName("검색어 없이 게시글을 검색하면, 게시글 페이지를 반환한다.")
     @Test
@@ -55,14 +57,14 @@ class ArticleServiceTest {
         SearchType searchType = SearchType.TITLE; // 검색 타입
         String searchKeyword = "title"; // 검색어
         Pageable pageable = Pageable.ofSize(20);
-        given(articleRepository.findByTitle(searchKeyword, pageable)).willReturn(Page.empty());
+        given(articleRepository.findByTitleContaining(searchKeyword, pageable)).willReturn(Page.empty());
 
         // When
         Page<ArticleDto> articles = sut.searchArticles(searchType, searchKeyword, pageable);
 
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findByTitle(searchKeyword, pageable); // findByTitle을 호출하는지 검증
+        then(articleRepository).should().findByTitleContaining(searchKeyword, pageable); // findByTitle을 호출하는지 검증
     }
 
     @DisplayName("게시글을 조회 시, 게시글을 반환")
@@ -124,23 +126,23 @@ class ArticleServiceTest {
 
     @DisplayName("게시글의 수정 정보를 입력하면, 게시글을 수정한다.") // Update
     @Test
-        void givenModifiedArticleInfo_whenUpdatingArticle_thenUpdatesArticle () {
-            // Given
-            Article article = createArticle(); // 수정될 객체 생성
-            ArticleDto dto = createArticleDto("새 타이틀", "새 내용", "#springboot"); // dto에 수정 내용 담음
-            given(articleRepository.getReferenceById(dto.id())).willReturn(article);
-            // dto.id()에서 가져온 엔티티의 ID를 사용하여 해당 ID에 해당하는 엔티티 프록시를 얻는다. (가짜 id)
+    void givenModifiedArticleInfo_whenUpdatingArticle_thenUpdatesArticle() {
+        // Given
+        Article article = createArticle(); // 수정될 객체 생성
+        ArticleDto dto = createArticleDto("새 타이틀", "새 내용", "#springboot"); // dto에 수정 내용 담음
+        given(articleRepository.getReferenceById(dto.id())).willReturn(article);
+        // dto.id()에서 가져온 엔티티의 ID를 사용하여 해당 ID에 해당하는 엔티티 프록시를 얻는다. (가짜 id)
 
-            // When
-            sut.updateArticle(dto); // 내용 수정
+        // When
+        sut.updateArticle(dto); // 내용 수정
 
-            // Then
-            assertThat(article)
-                    .hasFieldOrPropertyWithValue("title", dto.title())
-                    .hasFieldOrPropertyWithValue("content", dto.content())
-                    .hasFieldOrPropertyWithValue("hashtag", dto.hashtag()); // 잘 수정되었는지 확인
-            then(articleRepository).should().getReferenceById(dto.id()); // getReferenceById가 잘 호출되었는지 검증
-        }
+        // Then
+        assertThat(article)
+                .hasFieldOrPropertyWithValue("title", dto.title())
+                .hasFieldOrPropertyWithValue("content", dto.content())
+                .hasFieldOrPropertyWithValue("hashtag", dto.hashtag()); // 잘 수정되었는지 확인
+        then(articleRepository).should().getReferenceById(dto.id()); // getReferenceById가 잘 호출되었는지 검증
+    }
 
     @DisplayName("없는 게시글의 수정 정보를 입력하면, 경고 로그를 찍고 아무 것도 하지 않는다.")
     @Test
