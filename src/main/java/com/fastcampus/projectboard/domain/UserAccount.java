@@ -29,7 +29,9 @@ public class UserAccount extends AuditingFields {
     @Setter private String memo;
 
 
-    protected UserAccount() {}
+    protected UserAccount() {
+
+    }
 
     private UserAccount(String userId, String userPassword, String email, String nickname, String memo) {
         this.userId = userId;
