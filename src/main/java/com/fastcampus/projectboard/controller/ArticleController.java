@@ -39,6 +39,7 @@ public class ArticleController {
         // // 현재 페이지 번호와 해당 페이지들의 전체 숫자(getTotalPages)를 매개값으로 페이징 내비게이션 바 구축
         map.addAttribute("articles", articles);
         map.addAttribute("paginationBarNumbers", barNumbers);
+        map.addAttribute("searchTypes", SearchType.values());
 
         return "articles/index"; // 뷰에 전달
     }
