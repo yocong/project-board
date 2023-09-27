@@ -25,7 +25,7 @@ class PaginationServiceTest {
     }
 
     @DisplayName("현재 페이지 번호와 총 페이지 수를 주면, 페이징 바 리스트를 만들어준다.")
-    @MethodSource // 입력값 넣는 방법 중 하나
+    @MethodSource // 메소드에 소스를 주는 방식
     @ParameterizedTest(name = "[{index}] 현재 페이지: {0}, 총 페이지: {1} => {2}")
     void givenCurrentPageNumberAndTotalPages_whenCalculating_thenReturnsPaginationBarNumbers(int currentPageNumber, int totalPages, List<Integer> expected) {
         // Given
@@ -36,10 +36,10 @@ class PaginationServiceTest {
         // Then
         assertThat(actual).isEqualTo(expected);
     }
-    // 입력값 메서드
+    // 입력값 메서드 (@MethodSource를 클릭하여 생성)
     static Stream<Arguments> givenCurrentPageNumberAndTotalPages_whenCalculating_thenReturnsPaginationBarNumbers() {
         return Stream.of( // 입력값 (검증해보고 싶은 값) 나열
-                arguments(0, 13, List.of(0, 1, 2, 3, 4)),
+                arguments(0, 13, List.of(0, 1, 2, 3, 4)), // pagenumber, page의 index는 0부터 시작됨
                 arguments(1, 13, List.of(0, 1, 2, 3, 4)),
                 arguments(2, 13, List.of(0, 1, 2, 3, 4)),
                 arguments(3, 13, List.of(1, 2, 3, 4, 5)),
@@ -48,7 +48,7 @@ class PaginationServiceTest {
                 arguments(6, 13, List.of(4, 5, 6, 7, 8)),
                 arguments(10, 13, List.of(8, 9, 10, 11, 12)),
                 arguments(11, 13, List.of(9, 10, 11, 12)),
-                arguments(12, 13, List.of(10, 11, 12))
+                arguments(12, 13, List.of(10, 11, 12)) // 13페이지까지이므로 index 기준은 12가 끝
         );
     }
 
@@ -61,8 +61,6 @@ class PaginationServiceTest {
         int barLength = sut.currentBarLength();
 
         // Then
-        assertThat(barLength).isEqualTo(5);
+        assertThat(barLength).isEqualTo(5); // 상수 처리한 바의 길이 5를 명시적으로 알려주기 위해 해당 테스트 작성
     }
-
-
 }

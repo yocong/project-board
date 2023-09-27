@@ -11,7 +11,9 @@ public class PaginationService {
     private static final int BAR_LENGTH = 5; // 바의 길이
     public List<Integer> getPaginationBarNumbers(int currentPageNumber, int totalPages) { // 페이지네이션 바를 리스트로 내려줌
         int startNumber = Math.max(currentPageNumber - (BAR_LENGTH / 2), 0);
+        // 기본 골자는 현재 페이지 - (길이 / 2) 겠지만 0보다 작으면 0 반환
         int endNumber = Math.min(startNumber + BAR_LENGTH, totalPages);
+        // startNumber + 길이가 totalPages를 넘지 않게
 
         return IntStream.range(startNumber, endNumber).boxed().toList();
     }
