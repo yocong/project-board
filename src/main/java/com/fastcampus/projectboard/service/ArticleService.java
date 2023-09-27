@@ -70,4 +70,8 @@ public class ArticleService {
     public void deleteArticle(long articleId) { // 게시글을 삭제하는 메서드
         articleRepository.deleteById(articleId);
     }
+
+    public long getArticleCount() {
+        return articleRepository.count();
+    }
 }
