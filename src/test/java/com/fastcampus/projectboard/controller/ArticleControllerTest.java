@@ -94,12 +94,14 @@ class ArticleControllerTest {
         then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
     }
 
-    @DisplayName("[view][GET] 게시글 상세 페이지 - 정상 호출") // `/articles{article-id}` - 게시글 페이지
+    @DisplayName("[view][GET] 게시글 페이지 - 정상 호출") // `/articles{article-id}` - 게시글 페이지
     @Test
     public void givenNothing_whenRequestingArticleView_thenReturnsArticleView() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.getArticle(articleId)).willReturn(createArticleWithCommentsDto());
+        long totalCount = 1L; // 게시글 총 개수
+        given(articleService.getArticle(articleId)).willReturn(createArticleWithCommentsDto()); // articleId에 대한 가짜 게시글 데이터 반환(생성)
+        given(articleService.getArticleCount()).willReturn(totalCount); // 게시글 총 개수 반환
 
         // When & Then
         mvc.perform(get("/articles/" + articleId))
@@ -107,8 +109,11 @@ class ArticleControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("articles/detail"))
                 .andExpect(model().attributeExists("article")) // article(게시글) 존재 하는지
-                .andExpect(model().attributeExists("articleComments"));
+                .andExpect(model().attributeExists("articleComments"))
+                .andExpect(model().attributeExists("articleComments"))
+                .andExpect(model().attribute("totalCount", totalCount));
         then(articleService).should().getArticle(articleId);
+        then(articleService).should().getArticleCount();
     }
 
     @Disabled("구현 중")
