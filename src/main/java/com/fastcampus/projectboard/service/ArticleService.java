@@ -76,6 +76,7 @@ public class ArticleService {
         return articleRepository.count();
     }
 
+    // 해시태그 검색 기능
     @Transactional(readOnly = true)
     public Page<ArticleDto> searchArticlesViaHashtag(String hashtag, Pageable pageable) {
          if (hashtag == null || hashtag.isBlank()) {
@@ -85,6 +86,7 @@ public class ArticleService {
         return articleRepository.findByHashtag(hashtag, pageable).map(ArticleDto::from);
     }
 
+    // 해시태그 리스트 조회 기능
     public List<String> getHashtags() {
         return articleRepository.findAllDistinctHashtags();
     }
