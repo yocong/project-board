@@ -2,6 +2,7 @@ package com.fastcampus.projectboard.repository;
 
 import com.fastcampus.projectboard.domain.Article;
 import com.fastcampus.projectboard.domain.QArticle;
+import com.fastcampus.projectboard.repository.querydsl.ArticleRepositoryCustom;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource // 명시해 준 것만 rest api로 노출
 public interface ArticleRepository extends
         JpaRepository<Article, Long>, // Article 엔티티를 관리하기 위한 기본적인 CRUD메서드 제공
+        ArticleRepositoryCustom,
         QuerydslPredicateExecutor<Article>, // Article에 대한 검색 기능 추가
         QuerydslBinderCustomizer<QArticle> { // 검색 조건 설정
     Page<Article> findByTitleContaining(String title, Pageable pageable); // Containing : 부분 검색
