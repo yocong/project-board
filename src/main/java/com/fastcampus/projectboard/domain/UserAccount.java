@@ -1,5 +1,6 @@
 package com.fastcampus.projectboard.domain;
 
+import com.fastcampus.projectboard.dto.UserAccountDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

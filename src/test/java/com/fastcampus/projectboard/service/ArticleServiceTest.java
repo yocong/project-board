@@ -101,7 +101,7 @@ class ArticleServiceTest {
         then(articleRepository).should().findByHashtag(hashtag, pageable);
     }
 
-    @DisplayName("게시글 ID로 조회하면, 댓글 달긴 게시글을 반환한다.")
+    @DisplayName("게시글 ID로 조회하면, 댓글 달린 게시글을 반환한다.")
     @Test
     void givenArticleId_whenSearchingArticleWithComments_thenReturnsArticleWithComments() {
         // Given

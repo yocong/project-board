@@ -4,7 +4,6 @@ import com.fastcampus.projectboard.domain.constant.FormStatus;
 import com.fastcampus.projectboard.domain.constant.SearchType;
 import com.fastcampus.projectboard.dto.UserAccountDto;
 import com.fastcampus.projectboard.dto.request.ArticleRequest;
-import com.fastcampus.projectboard.dto.UserAccountDto;
 import com.fastcampus.projectboard.dto.response.ArticleResponse;
 import com.fastcampus.projectboard.dto.response.ArticleWithCommentsResponse;
 import com.fastcampus.projectboard.service.ArticleService;
@@ -81,19 +80,19 @@ public class ArticleController {
         return "articles/form";
     }
 
-    @PostMapping ("/form")
+    @PostMapping ("/form") // 게시글 작성- > 작성된 게시글을 데이터베이스에 저장 -> 게시글 목록 페이지로 리다이렉트
     public String postNewArticle(ArticleRequest articleRequest) {
         // TODO: 인증 정보를 넣어줘야 한다.
         articleService.saveArticle(articleRequest.toDto(UserAccountDto.of(
-                "uno", "asdf1234", "uno@mail.com", "Uno", "memo", null, null, null, null
+                "uno", "asdf1234", "uno@mail.com", "Uno", "memo"
         )));
 
         return "redirect:/articles";
     }
 
     @GetMapping("/{articleId}/form")
-    public String updateArticleForm(@PathVariable Long articleId, ModelMap map) {
-        ArticleResponse article = ArticleResponse.from(articleService.getArticle(articleId));
+    public String updateArticleForm(@PathVariable Long articleId, ModelMap map) { // 게시글 Form 수정
+        ArticleResponse article = ArticleResponse.from(articleService.getArticle(articleId)); // articleId에 해당되는 게시글을 ArticleResponse 객체로 변환
 
         map.addAttribute("article", article);
         map.addAttribute("formStatus", FormStatus.UPDATE);
@@ -102,10 +101,10 @@ public class ArticleController {
     }
 
     @PostMapping ("/{articleId}/form")
-    public String updateArticle(@PathVariable Long articleId, ArticleRequest articleRequest) {
+    public String updateArticle(@PathVariable Long articleId, ArticleRequest articleRequest) { // 게시글 수정
         // TODO: 인증 정보를 넣어줘야 한다.
         articleService.updateArticle(articleId, articleRequest.toDto(UserAccountDto.of(
-                "uno", "asdf1234", "uno@mail.com", "Uno", "memo", null, null, null, null
+                "uno", "asdf1234", "uno@mail.com", "Uno", "memo"
         )));
 
         return "redirect:/articles/" + articleId;
