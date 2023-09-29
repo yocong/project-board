@@ -25,7 +25,7 @@ public class Article extends AuditingFields {
 
     // Article 엔티티와 UserAccount 엔티티 간의 다대일 관계, (optional = false) : UserAccount는 null값 x
     @Setter @ManyToOne(optional = false) @JoinColumn(name = "userId") private UserAccount userAccount; // 유저 정보 (ID)
-
+    //  @ManyToOne : 여러개의 Article(게시글)과 하나의 userAccount 연결, @JoinColumn(name = "userId") : 외래 키(Foreign Key)를 지정
     @Setter @Column(nullable = false) private String title; // 제목
     @Setter @Column(nullable = false, length = 10000) private String content; // 본문
 

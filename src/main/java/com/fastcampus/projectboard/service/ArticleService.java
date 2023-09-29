@@ -1,10 +1,12 @@
 package com.fastcampus.projectboard.service;
 
 import com.fastcampus.projectboard.domain.Article;
-import com.fastcampus.projectboard.domain.type.SearchType;
+import com.fastcampus.projectboard.domain.UserAccount;
+import com.fastcampus.projectboard.domain.constant.SearchType;
 import com.fastcampus.projectboard.dto.ArticleDto;
 import com.fastcampus.projectboard.dto.ArticleWithCommentsDto;
 import com.fastcampus.projectboard.repository.ArticleRepository;
+import com.fastcampus.projectboard.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,7 +25,7 @@ import java.util.List;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
-
+    private final UserAccountRepository userAccountRepository;
     @Transactional(readOnly = true) // 읽기 전용 모드
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) { // 게시글 검색 메서드
         if (searchKeyword == null || searchKeyword.isBlank()) { // 검색 키워드가 없을 경우
@@ -43,19 +45,26 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public ArticleWithCommentsDto getArticle(Long articleId) { // 게시글 조회 메서드, articleId로 검색, ArticleWithCommentsDto로 반환 : 게시글에 대한 댓글 정보를 포함
+    public ArticleWithCommentsDto getArticleWithComments(Long articleId) { // 게시글 조회 메서드, articleId로 검색, ArticleWithCommentsDto로 반환 : 게시글에 대한 댓글 정보를 포함
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentsDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
 
+    @Transactional(readOnly = true)
+    public ArticleDto getArticle(Long articleId) {
+        return articleRepository.findById(articleId)
+                .map(ArticleDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
+    }
     public void saveArticle(ArticleDto dto) { // 새로운 게시글을 저장하는 메서드, dto에 저장할 게시글 정보 포함, void라 return x
-        articleRepository.save(dto.toEntity());
+        UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
+        articleRepository.save(dto.toEntity(userAccount));
     }
 
-    public void updateArticle(ArticleDto dto) { // 게시글을 업데이트하는 메서드, dto에 업데이트 할 게시글 정보 포함
+    public void updateArticle(Long articleId, ArticleDto dto) { // 게시글을 업데이트하는 메서드, dto에 업데이트 할 게시글 정보 포함
         try {
-            Article article = articleRepository.getReferenceById(dto.id());
+            Article article = articleRepository.getReferenceById(articleId);
             if (dto.title() != null) {
                 article.setTitle(dto.title());
             }
@@ -76,6 +85,7 @@ public class ArticleService {
         return articleRepository.count();
     }
 
+    // 해시태그 검색 기능
     @Transactional(readOnly = true)
     public Page<ArticleDto> searchArticlesViaHashtag(String hashtag, Pageable pageable) {
          if (hashtag == null || hashtag.isBlank()) {
@@ -85,6 +95,7 @@ public class ArticleService {
         return articleRepository.findByHashtag(hashtag, pageable).map(ArticleDto::from);
     }
 
+    // 해시태그 리스트 조회 기능
     public List<String> getHashtags() {
         return articleRepository.findAllDistinctHashtags();
     }

@@ -17,7 +17,7 @@ import java.util.Objects;
 @Entity
 public class UserAccount extends AuditingFields {
     @Id
-    @Column(length = 50)
+    @Column(length = 50) // userId 최대 50자
     private String userId;
 
     @Setter @Column(nullable = false) private String userPassword;
