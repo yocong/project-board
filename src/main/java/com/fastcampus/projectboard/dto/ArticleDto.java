@@ -1,6 +1,7 @@
 package com.fastcampus.projectboard.dto;
 
 import com.fastcampus.projectboard.domain.Article;
+import com.fastcampus.projectboard.domain.UserAccount;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,9 @@ public record ArticleDto( // DTO : 데이터 전달 객체, 이 클래스는 불변성을 가지며
         LocalDateTime modifiedAt,
         String modifiedBy
 ) { // ArticleDto 객체 생성 (DTO 간편하게 생성)
+    public static ArticleDto of(UserAccountDto userAccountDto, String title, String content, String hashtag) {
+        return new ArticleDto(null, userAccountDto, title, content, hashtag, null, null, null, null);
+    }
     public static ArticleDto of(Long id, UserAccountDto userAccountDto, String title, String content, String hashtag, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
         return new ArticleDto(id, userAccountDto, title, content, hashtag, createdAt, createdBy, modifiedAt, modifiedBy);
     }
@@ -38,9 +42,9 @@ public record ArticleDto( // DTO : 데이터 전달 객체, 이 클래스는 불변성을 가지며
         );
     }
 
-    public Article toEntity() { // DTO를 엔티티로 복원
+    public Article toEntity(UserAccount userAccount) {// DTO를 엔티티로 복원
         return Article.of(
-                userAccountDto.toEntity(),
+                userAccount,
                 title,
                 content,
                 hashtag
