@@ -235,11 +235,11 @@ class ArticleControllerTest {
         willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
 
         // When & Then
-        mvc.perform(
+        mvc.perform( // POST 요청 생성
                         post("/articles/form")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .content(formDataEncoder.encode(articleRequest))
-                                .with(csrf())
+                                .with(csrf()) // 토큰 전송
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/articles"))
