@@ -80,7 +80,7 @@ public class ArticleController {
         return "articles/form";
     }
 
-    @PostMapping ("/form") // 게시글 작성- > 작성된 게시글을 데이터베이스에 저장 -> 게시글 목록 페이지로 리다이렉트
+    @PostMapping("/form") // 게시글 작성- > 작성된 게시글을 데이터베이스에 저장 -> 게시글 목록 페이지로 리다이렉트
     public String postNewArticle(ArticleRequest articleRequest) {
         // TODO: 인증 정보를 넣어줘야 한다.
         articleService.saveArticle(articleRequest.toDto(UserAccountDto.of(
@@ -100,7 +100,7 @@ public class ArticleController {
         return "articles/form";
     }
 
-    @PostMapping ("/{articleId}/form")
+    @PostMapping("/{articleId}/form")
     public String updateArticle(@PathVariable Long articleId, ArticleRequest articleRequest) { // 게시글 수정
         // TODO: 인증 정보를 넣어줘야 한다.
         articleService.updateArticle(articleId, articleRequest.toDto(UserAccountDto.of(
