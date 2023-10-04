@@ -26,6 +26,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
+
     @Transactional(readOnly = true) // 읽기 전용 모드
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) { // 게시글 검색 메서드
         if (searchKeyword == null || searchKeyword.isBlank()) { // 검색 키워드가 없을 경우
@@ -57,6 +58,7 @@ public class ArticleService {
                 .map(ArticleDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
+
     public void saveArticle(ArticleDto dto) { // 새로운 게시글을 저장하는 메서드, dto에 저장할 게시글 정보 포함, void라 return x
         UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
         articleRepository.save(dto.toEntity(userAccount));
@@ -65,20 +67,20 @@ public class ArticleService {
     public void updateArticle(Long articleId, ArticleDto dto) { // 게시글을 업데이트하는 메서드, dto에 업데이트 할 게시글 정보 포함
         try {
             Article article = articleRepository.getReferenceById(articleId);
-            if (dto.title() != null) {
-                article.setTitle(dto.title());
+            UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
+
+            if (article.getUserAccount().equals(userAccount)) { // 게시글 사용자와 인증된 사용자가 같을 때 수행
+                if (dto.title() != null) { article.setTitle(dto.title()); }
+                if (dto.content() != null) { article.setContent(dto.content()); }
+                article.setHashtag(dto.hashtag());
             }
-            if (dto.content() != null) {
-                article.setContent(dto.content());
-            }
-            article.setHashtag(dto.hashtag());
         } catch (EntityNotFoundException e) {
-            log.warn("게시글 업데이트 실패. 게시글을 찾을 수 없습니다 - dto: {} ", dto);
+            log.warn("게시글 업데이트 실패. 게시글을 수정하는데 필요한 정보를 찾을 수 없습니다 - {} ", e.getLocalizedMessage());
         }
     }
 
-    public void deleteArticle(long articleId) { // 게시글을 삭제하는 메서드
-        articleRepository.deleteById(articleId);
+    public void deleteArticle(long articleId, String userId) { // 게시글을 삭제하는 메서드
+        articleRepository.deleteByIdAndUserAccount_UserId(articleId, userId);
     }
 
     public long getArticleCount() {
@@ -88,8 +90,8 @@ public class ArticleService {
     // 해시태그 검색 기능
     @Transactional(readOnly = true)
     public Page<ArticleDto> searchArticlesViaHashtag(String hashtag, Pageable pageable) {
-         if (hashtag == null || hashtag.isBlank()) {
-             return Page.empty(pageable);
+        if (hashtag == null || hashtag.isBlank()) {
+            return Page.empty(pageable);
         }
 
         return articleRepository.findByHashtag(hashtag, pageable).map(ArticleDto::from);

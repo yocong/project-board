@@ -19,6 +19,8 @@ public interface ArticleCommentRepository extends
         QuerydslPredicateExecutor<ArticleComment>,
         QuerydslBinderCustomizer<QArticleComment> {
     List<ArticleComment> findByArticle_Id(Long articleId);
+
+    void deleteByIdAndUserAccount_UserId(Long articleCommentId, String userId);
     @Override
     default void customize(QuerydslBindings bindings, QArticleComment root) {
         bindings.excludeUnlistedProperties(true); // 리스트에 포함되지 않은 것은 검색 안되게 해줌 (검색하고 싶은 것만 할 수 있게 만듦)
