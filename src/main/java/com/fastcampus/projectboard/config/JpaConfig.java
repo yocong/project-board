@@ -1,9 +1,13 @@
 package com.fastcampus.projectboard.config;
 
+import com.fastcampus.projectboard.dto.security.BoardPrincipal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -13,6 +17,11 @@ public class JpaConfig {
 
     @Bean
     public AuditorAware<String> auditorAware() { // 엔티티의 생성자와 수정자를 추적하고 기록하는 데 사용
-        return () -> Optional.of("yocong"); // TODO: 스프링 시큐리티로 인증 기능을 붙이게 될 때, 수정하자
+        return () -> Optional.ofNullable(SecurityContextHolder.getContext()) // SecurityContextHolder : 인증 정보를 가진 클래스
+                .map(SecurityContext::getAuthentication)
+                .filter(Authentication::isAuthenticated) // 인증 되는지 확인
+                .map(Authentication::getPrincipal) // 인증이 되는게 확인됐으니 principal 꺼내옴
+                .map(BoardPrincipal.class::cast)
+                .map(BoardPrincipal::getUsername);
     }
 }
